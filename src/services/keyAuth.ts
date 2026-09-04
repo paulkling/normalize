@@ -19,12 +19,18 @@ export class KeyAuthService {
     private readonly clock: () => number = Date.now,
   ) {}
 
-  /** Resolves the bearer header to an active key. Throws 401 for unknown/malformed and 403 for revoked. */
-  async authenticate(authorization: string | undefined): Promise<ApiKey> {
+  /** Resolves the bearer header to a key row (possibly revoked). Throws 401 for unknown/malformed. */
+  async resolve(authorization: string | undefined): Promise<ApiKey> {
     const token = parseBearer(authorization);
     if (!token) throw new ApiError("unauthorized");
     const key = await this.lookup(hashApiKey(token, this.pepper));
     if (!key) throw new ApiError("unauthorized");
+    return key;
+  }
+
+  /** Resolves the bearer header to an active key. Throws 401 for unknown/malformed and 403 for revoked. */
+  async authenticate(authorization: string | undefined): Promise<ApiKey> {
+    const key = await this.resolve(authorization);
     if (key.revoked_at) throw new ApiError("forbidden");
     return key;
   }
