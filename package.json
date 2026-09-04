@@ -1,0 +1,32 @@
+{
+  "name": "normalize",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Normalize — keyed HTTP service for ASR transcript normalization (normalize-v1)",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "migrate": "tsx src/db/migrate.ts",
+    "fake-llama": "tsx scripts/fake-llama-server.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.1",
+    "@supabase/supabase-js": "^2.115.0",
+    "hono": "^4.13.5",
+    "jose": "^6.2.11",
+    "postgres": "^3.4.9",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.23.13",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  }
+}
