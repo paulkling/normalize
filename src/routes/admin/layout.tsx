@@ -16,8 +16,8 @@ p{margin:0 0 .75rem}
 .nav a{padding:.45rem .6rem;border-radius:6px;color:var(--ink)}
 .nav a:hover{background:var(--bg);text-decoration:none}
 .nav a[aria-current=page]{background:var(--accent);color:#fff}
-.rail .who{margin-top:auto;font-size:.85rem;color:var(--muted);padding:0 .5rem;word-break:break-all}
-.rail .who b{display:block;color:var(--ink);font-weight:500}
+.rail .who{margin-top:auto;font-size:.85rem;color:var(--muted);padding:0 .5rem}
+.rail .who b{display:block;color:var(--ink);font-weight:500;overflow-wrap:anywhere}
 .main{padding:2rem 2.5rem;max-width:1180px;width:100%}
 .head{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:1.5rem}
 .head p{color:var(--muted);margin:.35rem 0 0;max-width:60ch}
