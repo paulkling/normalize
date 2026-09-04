@@ -1,0 +1,24 @@
+{$DOMAIN} {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		-Server
+	}
+	request_body {
+		max_size 64KB
+	}
+	handle /healthz {
+		reverse_proxy api:3000
+	}
+	handle /v1/* {
+		reverse_proxy api:3000
+	}
+	handle /admin* {
+		reverse_proxy api:3000
+	}
+	handle {
+		respond 404
+	}
+}

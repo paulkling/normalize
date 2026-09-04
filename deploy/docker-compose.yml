@@ -1,0 +1,54 @@
+# Production topology on one Droplet: Caddy (TLS) -> api (Hono) -> llama (llama.cpp), state in Supabase.
+# Usage: cd deploy && docker compose --env-file ../.env up -d --build
+services:
+  llama:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    command: >
+      --model /models/normalize-v1.gguf
+      --host 0.0.0.0 --port 8080
+      --jinja --chat-template-kwargs {"enable_thinking":false}
+      --temp 0
+      --ctx-size 2048 --parallel 2
+      --no-webui
+    volumes:
+      - ../models:/models:ro
+    expose: ["8080"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      start_period: 60s
+      retries: 10
+
+  api:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    env_file: ../.env
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: "3000"
+      LLAMA_URL: http://llama:8080
+    depends_on:
+      llama:
+        condition: service_healthy
+    expose: ["3000"]
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    ports: ["80:80", "443:443"]
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [api]
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
