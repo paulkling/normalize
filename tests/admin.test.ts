@@ -239,3 +239,13 @@ describe("admin API", () => {
     expect(d.keys[0]).toMatchObject({ used: 1, limit: 3, remaining: 2 });
   });
 });
+
+describe("fake identity across restarts", () => {
+  it("accepts a magic link when the allowlist row already has an auth_user_id from a previous process", async () => {
+    const t = makeTestDeps();
+    const entry = await seedAdmin(t, SUPER);
+    await t.repos.allowlist.update(entry.id, { auth_user_id: "user_from_previous_process" });
+    const c = await login(t, SUPER);
+    expect((await c.fetch("/admin/api/me")).status).toBe(200);
+  });
+});

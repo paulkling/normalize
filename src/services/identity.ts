@@ -40,6 +40,8 @@ export class FakeIdentityProvider implements IdentityProvider {
     return id;
   }
   async sendMagicLink(email: string, redirectTo: string) {
+    // The fake has no persistence, so a user recorded in the database by an earlier process must be recreated here.
+    await this.ensureUser(email);
     const tokenHash = `th_${++this.seq}`;
     this.tokenHashes.set(tokenHash, email.toLowerCase());
     this.sentLinks.push({ email: email.toLowerCase(), redirectTo, tokenHash });

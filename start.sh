@@ -1,0 +1,1 @@
+docker build -f Dockerfile.all-in-one -t normalize-allinone:dev . && docker run --rm -p 3000:3000 --name normalize-allinone normalize-allinone:dev

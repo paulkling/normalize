@@ -6,3 +6,5 @@ dist/
 models/*.gguf
 .DS_Store
 coverage/
+
+.dev/

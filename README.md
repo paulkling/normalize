@@ -21,22 +21,26 @@ Product requirements live in `Normalize-PRD-v0.3.md`; the engineering design is 
 
 ```bash
 pnpm install
-docker run -d --name normalize-pg -e POSTGRES_PASSWORD=dev -e POSTGRES_DB=normalize -p 5432:5432 postgres:16-alpine
-export DATABASE_URL=postgres://postgres:dev@127.0.0.1:5432/normalize
-pnpm migrate
-pnpm fake-llama &                       # toy normalizer on :8080
-IDENTITY_PROVIDER=fake KEY_PEPPER=dev-pepper-dev-pepper IP_HMAC_SECRET=dev-ip-secret-dev-ip \
-SESSION_SECRET=dev-session-secret-dev-session-secret-dev pnpm dev
+scripts/dev-up.sh        # Docker Postgres + migrations + fake llama-server + app on :3000
+scripts/smoke.sh         # signs in, creates a key, calls /v1/normalize, checks logs and audit
+scripts/dev-up.sh down   # stop (add `reset` to also delete the database container)
 ```
 
-Open http://localhost:3000/admin, enter `pkling@brainsprung.com`, and copy the magic link printed in the server
-log (fake identity mode prints it instead of sending mail). Create a key, then:
+To use the console yourself: open http://localhost:3000/admin, enter `pkling@brainsprung.com`, then run
+`scripts/dev-link.sh` to print the magic link (fake identity mode logs it instead of sending mail) and open it in the
+same browser. Create a key on the API keys page, then:
 
 ```bash
 curl -s http://localhost:3000/v1/normalize \
   -H "Authorization: Bearer nrm_..." -H "Content-Type: application/json" \
   -d '{"transcript":"um so hello there uh this is a test","styling":"casual"}'
 ```
+
+### One container instead
+
+`./start.sh` builds `Dockerfile.all-in-one`, which bundles Postgres, the fake model and the app into one image, and runs it
+on :3000. Use `CONTAINER=normalize-allinone scripts/dev-link.sh` to read magic links from its log. This is for quick
+demos only; it is not the production topology.
 
 ## Tests
 

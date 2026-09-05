@@ -1,0 +1,37 @@
+FROM node:22-bookworm
+
+WORKDIR /app
+
+# Install PostgreSQL inside the container so one container can run DB + API + fake llama.
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends postgresql postgresql-contrib \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN corepack enable
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
+
+COPY tsconfig.json tsconfig.build.json ./
+COPY src ./src
+COPY scripts ./scripts
+COPY supabase ./supabase
+
+RUN pnpm build
+
+COPY scripts/docker-start-all-in-one.sh /usr/local/bin/docker-start-all-in-one.sh
+RUN chmod +x /usr/local/bin/docker-start-all-in-one.sh
+
+ENV NODE_ENV=development
+ENV HOST=0.0.0.0
+ENV PORT=3000
+ENV PUBLIC_URL=http://localhost:3000
+ENV LLAMA_URL=http://127.0.0.1:8080
+ENV IDENTITY_PROVIDER=fake
+ENV KEY_PEPPER=dev-pepper-dev-pepper
+ENV IP_HMAC_SECRET=dev-ip-secret-dev-ip
+ENV SESSION_SECRET=dev-session-secret-dev-session-secret-dev
+
+EXPOSE 3000
+
+ENTRYPOINT ["/usr/local/bin/docker-start-all-in-one.sh"]
