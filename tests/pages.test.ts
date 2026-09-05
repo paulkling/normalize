@@ -56,3 +56,41 @@ describe("admin pages", () => {
     expect(r.status).toBe(302);
   });
 });
+
+describe("static files", () => {
+  it("serves the favicon set with cache headers", async () => {
+    const { app } = makeTestDeps();
+    for (const [path, type] of [
+      ["/favicon.ico", "image/x-icon"],
+      ["/icon-32.png", "image/png"],
+      ["/icon-180.png", "image/png"],
+      ["/icon.png", "image/png"],
+    ] as const) {
+      const res = await app.request(path);
+      expect(res.status, path).toBe(200);
+      expect(res.headers.get("content-type"), path).toContain(type);
+      expect(res.headers.get("cache-control"), path).toContain("max-age");
+      expect((await res.arrayBuffer()).byteLength, path).toBeGreaterThan(1000);
+    }
+  });
+
+  it("does not expose anything else under public and keeps API routes intact", async () => {
+    const { app } = makeTestDeps();
+    expect((await app.request("/public/icon.png")).status).toBe(404);
+    expect((await app.request("/icon-64.png")).status).toBe(404);
+    expect((await app.request("/healthz")).status).toBe(200);
+  });
+
+  it("links the favicons and shows the mark on signed-out and signed-in pages", async () => {
+    const t = makeTestDeps();
+    await seedAdmin(t, SUPER);
+    const signedOut = await (await t.app.request("/admin/login")).text();
+    const signedIn = await (await (await login(t, SUPER)).fetch("/admin")).text();
+    for (const [label, html] of [["login", signedOut], ["dashboard", signedIn]] as const) {
+      expect(html, label).toContain('rel="icon" href="/favicon.ico"');
+      expect(html, label).toContain('href="/icon-32.png"');
+      expect(html, label).toContain('rel="apple-touch-icon" href="/icon-180.png"');
+      expect(html, label).toContain('src="/icon-180.png"');
+    }
+  });
+});

@@ -10,7 +10,8 @@ h1{font-size:2rem;line-height:1.15}h2{font-size:1.35rem}h3{font-size:1.1rem}
 p{margin:0 0 .75rem}
 .shell{display:grid;grid-template-columns:200px 1fr;min-height:100vh}
 .rail{background:var(--surface);border-right:1px solid var(--line);padding:1.5rem 1rem;position:sticky;top:0;height:100vh;display:flex;flex-direction:column}
-.brand{font-family:var(--serif);font-size:1.35rem;padding:0 .5rem .25rem;color:var(--ink)}
+.brand{display:flex;align-items:center;gap:.5rem;font-family:var(--serif);font-size:1.35rem;padding:0 .5rem .25rem;color:var(--ink)}
+.mark{border-radius:6px;flex:none;display:block}
 .brand small{display:block;font-family:var(--sans);font-size:.75rem;color:var(--muted)}
 .nav{display:flex;flex-direction:column;gap:2px;margin-top:1.25rem}
 .nav a{padding:.45rem .6rem;border-radius:6px;color:var(--ink)}
@@ -75,6 +76,7 @@ dt{color:var(--muted)}dd{margin:0;word-break:break-all}
 .login{min-height:100vh;display:grid;place-items:center;padding:2rem}
 .login .card{width:min(420px,100%);padding:2rem}
 .login h1{margin-bottom:.35rem}
+.login .mark{width:56px;height:56px;border-radius:12px;margin-bottom:1rem}
 .login form{margin-top:1.25rem}
 .login button{width:100%;margin-top:.9rem}
 .empty{padding:2rem 1rem;text-align:center;color:var(--muted)}
@@ -172,6 +174,9 @@ export const Document: FC<PropsWithChildren<{ title: string; csrf: string }>> = 
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="csrf-token" content={csrf} />
       <meta name="robots" content="noindex" />
+      <link rel="icon" href="/favicon.ico" sizes="48x48" />
+      <link rel="icon" href="/icon-32.png" type="image/png" sizes="32x32" />
+      <link rel="apple-touch-icon" href="/icon-180.png" />
       <title>{title} · Normalize</title>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
     </head>
@@ -187,7 +192,10 @@ export const Shell: FC<PropsWithChildren<ShellProps>> = ({ title, active, csrf, 
     <div class="shell">
       <aside class="rail">
         <div class="brand">
-          Normalize<small>admin console</small>
+          <img class="mark" src="/icon-180.png" alt="" width="26" height="26" />
+          <span>
+            Normalize<small>admin console</small>
+          </span>
         </div>
         <nav class="nav" aria-label="Sections">
           {NAV.filter(([id]) => id !== "allowlist" || admin.role === "super_admin").map(([id, href, label]) => (

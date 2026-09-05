@@ -13,6 +13,7 @@ Product requirements live in `Normalize-PRD-v0.3.md`; the engineering design is 
 | `src/services` | Inference client, key auth cache, quotas + RPS, admin sessions, identity (Supabase + fake) |
 | `src/repos` | Repository interfaces with Postgres and in-memory implementations |
 | `src/routes` | `/v1/*`, `/healthz`, `/admin/*` pages and `/admin/api/*` JSON |
+| `public/` | Files served at the web root: `favicon.ico`, `icon-32.png`, `icon-180.png`, and `icon.png` (the 1024px master the others are derived from) |
 | `supabase/migrations` | Schema, RLS policies, seed super-admin |
 | `deploy/` | Docker Compose (llama-server, api, Caddy) and Caddyfile |
 | `scripts/fake-llama-server.ts` | Stand-in for llama-server used in tests and local dev |

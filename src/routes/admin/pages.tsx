@@ -71,6 +71,7 @@ export function adminPageRoutes(deps: Deps) {
       <Document title="Sign in" csrf={csrf}>
         <div class="login">
           <div class="card">
+            <img class="mark" src="/icon-180.png" alt="" width="56" height="56" />
             <h1>Normalize</h1>
             <p class="muted">Admin console. Sign in with your work email to get a one-time link.</p>
             {reason ? <div class="banner">{reason}</div> : null}

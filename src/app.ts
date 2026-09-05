@@ -6,6 +6,7 @@ import { adminApiRoutes } from "./routes/admin/api.js";
 import { adminAuthRoutes } from "./routes/admin/auth.js";
 import { adminPageRoutes } from "./routes/admin/pages.js";
 import { healthRoutes } from "./routes/health.js";
+import { staticRoutes } from "./routes/static.js";
 import { v1Routes } from "./routes/v1.js";
 
 export function createApp(deps: Deps, opts: { getRemoteAddr?: (c: any) => string | null } = {}) {
@@ -13,6 +14,7 @@ export function createApp(deps: Deps, opts: { getRemoteAddr?: (c: any) => string
   app.use("*", secureHeaders({ strictTransportSecurity: deps.config.secureCookies ? "max-age=31536000; includeSubDomains" : false }));
 
   app.route("/", healthRoutes(deps));
+  app.route("/", staticRoutes());
   app.route("/v1", v1Routes(deps, opts.getRemoteAddr));
   app.route("/admin/auth", adminAuthRoutes(deps, opts.getRemoteAddr));
   app.route("/admin/api", adminApiRoutes(deps));
